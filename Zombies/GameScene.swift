@@ -13,12 +13,14 @@ class GameScene: SKScene {
     
     var player = SKSpriteNode()
     var zombie = SKSpriteNode()
+    var playerSpeed : CGFloat = 150
     var lastTouch : CGPoint?
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
         zombie = self.childNode(withName: "zombie") as! SKSpriteNode
         lastTouch = player.position
+        updateCamera()
     }
     
     
@@ -26,7 +28,17 @@ class GameScene: SKScene {
         lastTouch = touches.first?.location(in: self)
     }
     
-    override func update(_ currentTime: TimeInterval) {
+    func shouldMove(_ touchPosition: CGPoint, _ currentPosition: CGPoint) -> Bool {
+        return abs(currentPosition.x - touchPosition.x) > player.frame.width / 2 ||
+            abs(currentPosition.y - touchPosition.y) > player.frame.height / 2
+    }
+    
+    func updateCamera() {
+        camera?.position = player.position
+    }
+    
+    func updatePosition(for sprite: SKSpriteNode,
+                        to target: CGPoint) {
         let currentPosition = player.position
         let angle = CGFloat.pi + atan2(currentPosition.y - (lastTouch?.y)!,
                                        currentPosition.x - (lastTouch?.x)!)
@@ -34,10 +46,19 @@ class GameScene: SKScene {
                                            duration: 0)
         player.run(rotateAction)
         
-        let velocityX = speed * cos(angle)
-        let velocityY = speed * sin(angle)
+        let velocityX = playerSpeed * cos(angle)
+        let velocityY = playerSpeed * sin(angle)
         
         let newVelocity = CGVector(dx: velocityX, dy: velocityY)
         player.physicsBody?.velocity = newVelocity
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if shouldMove(lastTouch!, player.position) {
+            updatePosition(for: player, to: lastTouch!)
+            updateCamera()
+        } else {
+            player.physicsBody?.isResting = true
+        }
     }
 }
