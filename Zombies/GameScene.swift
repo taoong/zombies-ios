@@ -23,8 +23,19 @@ class GameScene: SKScene {
         updateCamera()
     }
     
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleTouch(touches)
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleTouch(touches)
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleTouch(touches)
+    }
+    
+    func handleTouch(_ touches: Set<UITouch>) {
         lastTouch = touches.first?.location(in: self)
     }
     
@@ -54,6 +65,10 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        
+    }
+    
+    override func didSimulatePhysics() {
         if shouldMove(lastTouch!, player.position) {
             updatePosition(for: player, to: lastTouch!)
             updateCamera()
