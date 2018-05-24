@@ -12,12 +12,24 @@ import GameplayKit
 class GameScene: SKScene {
     
     var player = SKSpriteNode()
+    var sword = SKSpriteNode()
+    var swordAnchor = SKSpriteNode(color: UIColor.white, size: CGSize(width: 1, height: 1))
     var zombie = SKSpriteNode()
     var playerSpeed : CGFloat = 150
     var lastTouch : CGPoint?
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
+        sword = self.childNode(withName: "sword") as! SKSpriteNode
+        swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
+        swordAnchor.physicsBody!.affectedByGravity = false
+        swordAnchor.physicsBody!.mass = 9999999999
+        swordAnchor.position = player.position
+        let joint = SKPhysicsJointPin.joint(
+            withBodyA:  swordAnchor.physicsBody!,
+            bodyB: sword.physicsBody!,
+            anchor: swordAnchor.position)
+        self.physicsWorld.add(joint)
         zombie = self.childNode(withName: "zombie") as! SKSpriteNode
         lastTouch = player.position
         updateCamera()
