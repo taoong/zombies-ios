@@ -55,6 +55,7 @@ class GameScene: SKScene {
                                        currentPosition.x - (lastTouch?.x)!)
         let rotateAction = SKAction.rotate(toAngle: angle + (CGFloat.pi*0.5),
                                            duration: 0)
+        
         player.run(rotateAction)
         
         let velocityX = playerSpeed * cos(angle)
