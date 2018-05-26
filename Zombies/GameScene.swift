@@ -25,6 +25,7 @@ class GameScene: SKScene {
         swordAnchor.physicsBody!.affectedByGravity = false
         swordAnchor.physicsBody!.mass = 9999999999
         swordAnchor.position = player.position
+        self.addChild(swordAnchor)
         let joint = SKPhysicsJointPin.joint(
             withBodyA:  swordAnchor.physicsBody!,
             bodyB: sword.physicsBody!,
@@ -75,6 +76,8 @@ class GameScene: SKScene {
         
         let newVelocity = CGVector(dx: velocityX, dy: velocityY)
         player.physicsBody?.velocity = newVelocity
+        
+        swordAnchor.position = player.position
     }
     
     override func update(_ currentTime: TimeInterval) {
