@@ -18,7 +18,6 @@ class GameScene: SKScene {
     var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
     var lastTouch : CGPoint?
-    var swordCount = 0
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
@@ -41,23 +40,22 @@ class GameScene: SKScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if button.contains((touches.first?.location(in: self))!) {
-            sword.run(SKAction.rotate(byAngle: CGFloat.pi, duration: 0.5))
-            if swordCount == 0 {
-                swordCount = 1
-            } else {
-                swordCount = 0
-            }
+            sword.run(SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 0.5))
         } else {
             handleTouch(touches)
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches)
+        if !button.contains((touches.first?.location(in: self))!) {
+            handleTouch(touches)
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches)
+        if !button.contains((touches.first?.location(in: self))!) {
+            handleTouch(touches)
+        }
     }
     
     func handleTouch(_ touches: Set<UITouch>) {
@@ -71,6 +69,7 @@ class GameScene: SKScene {
     
     func updateCamera() {
         camera?.position = player.position
+        button.position = CGPoint(x: player.position.x - 137, y: player.position.y - 283)
     }
     
     func updatePosition(for sprite: SKSpriteNode,
@@ -91,11 +90,7 @@ class GameScene: SKScene {
         
         swordAnchor.position = player.position
         if !sword.hasActions() {
-            if swordCount == 1 {
-                sword.position = CGPoint(x: player.position.x - 40, y: player.position.y)
-            } else {
-                sword.position = CGPoint(x: player.position.x + 40, y: player.position.y)
-            }
+            sword.position = CGPoint(x: player.position.x + 40, y: player.position.y)
         }
     }
     
