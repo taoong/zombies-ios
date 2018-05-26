@@ -18,6 +18,7 @@ class GameScene: SKScene {
     var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
     var lastTouch : CGPoint?
+    var swordCount = 0
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
@@ -41,6 +42,11 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if button.contains((touches.first?.location(in: self))!) {
             sword.run(SKAction.rotate(byAngle: CGFloat.pi, duration: 0.5))
+            if swordCount == 0 {
+                swordCount = 1
+            } else {
+                swordCount = 0
+            }
         } else {
             handleTouch(touches)
         }
@@ -84,10 +90,17 @@ class GameScene: SKScene {
         player.physicsBody?.velocity = newVelocity
         
         swordAnchor.position = player.position
+        if !sword.hasActions() {
+            if swordCount == 1 {
+                sword.position = CGPoint(x: player.position.x - 40, y: player.position.y)
+            } else {
+                sword.position = CGPoint(x: player.position.x + 40, y: player.position.y)
+            }
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
-        
+        swordAnchor.position = player.position
     }
     
     override func didSimulatePhysics() {
