@@ -15,6 +15,7 @@ class GameScene: SKScene {
     var sword = SKSpriteNode()
     var swordAnchor = SKSpriteNode(color: UIColor.white, size: CGSize(width: 1, height: 1))
     var zombie = SKSpriteNode()
+    var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
     var lastTouch : CGPoint?
     
@@ -32,12 +33,17 @@ class GameScene: SKScene {
             anchor: swordAnchor.position)
         self.physicsWorld.add(joint)
         zombie = self.childNode(withName: "zombie") as! SKSpriteNode
+        button = self.childNode(withName: "button") as! SKSpriteNode
         lastTouch = player.position
         updateCamera()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches)
+        if button.contains((touches.first?.location(in: self))!) {
+            sword.run(SKAction.rotate(byAngle: CGFloat.pi, duration: 0.5))
+        } else {
+            handleTouch(touches)
+        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
