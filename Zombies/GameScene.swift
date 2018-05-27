@@ -21,6 +21,8 @@ class GameScene: SKScene {
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
+        zombie = self.childNode(withName: "zombie") as! SKSpriteNode
+        button = self.childNode(withName: "button") as! SKSpriteNode
         sword = self.childNode(withName: "sword") as! SKSpriteNode
         swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
         swordAnchor.physicsBody!.affectedByGravity = false
@@ -32,8 +34,6 @@ class GameScene: SKScene {
             bodyB: sword.physicsBody!,
             anchor: swordAnchor.position)
         self.physicsWorld.add(joint)
-        zombie = self.childNode(withName: "zombie") as! SKSpriteNode
-        button = self.childNode(withName: "button") as! SKSpriteNode
         lastTouch = player.position
         updateCamera()
     }
@@ -104,6 +104,34 @@ class GameScene: SKScene {
             updateCamera()
         } else {
             player.physicsBody?.isResting = true
+        }
+    }
+}
+
+extension GameScene: SKPhysicsContactDelegate {
+    func didBegin(_ contact: SKPhysicsContact) {
+        // 1. Create local variables for two physics bodies
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        
+        // 2. Assign the two physics bodies so that the one with the
+        // lower category is always stored in firstBody
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        if firstBody.categoryBitMask == 2 && secondBody.categoryBitMask == 4 {
+            print("killed a zombie!")
+            zombie.color = UIColor.cyan
+        }
+        
+        if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
+            print("zombie killed you!")
+            player.color = UIColor.clear
         }
     }
 }
