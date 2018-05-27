@@ -9,7 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var player = SKSpriteNode()
     var sword = SKSpriteNode()
@@ -34,6 +34,7 @@ class GameScene: SKScene {
             bodyB: sword.physicsBody!,
             anchor: swordAnchor.position)
         self.physicsWorld.add(joint)
+        self.physicsWorld.contactDelegate = self
         lastTouch = player.position
         updateCamera()
     }
@@ -94,21 +95,6 @@ class GameScene: SKScene {
         }
     }
     
-    override func update(_ currentTime: TimeInterval) {
-        swordAnchor.position = player.position
-    }
-    
-    override func didSimulatePhysics() {
-        if shouldMove(lastTouch!, player.position) {
-            updatePosition(for: player, to: lastTouch!)
-            updateCamera()
-        } else {
-            player.physicsBody?.isResting = true
-        }
-    }
-}
-
-extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         // 1. Create local variables for two physics bodies
         var firstBody: SKPhysicsBody
@@ -132,6 +118,19 @@ extension GameScene: SKPhysicsContactDelegate {
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
             print("zombie killed you!")
             player.color = UIColor.clear
+        }
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        swordAnchor.position = player.position
+    }
+    
+    override func didSimulatePhysics() {
+        if shouldMove(lastTouch!, player.position) {
+            updatePosition(for: player, to: lastTouch!)
+            updateCamera()
+        } else {
+            player.physicsBody?.isResting = true
         }
     }
 }
