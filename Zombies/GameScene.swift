@@ -15,6 +15,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var sword = SKSpriteNode()
     var swordAnchor = SKSpriteNode(color: UIColor.white, size: CGSize(width: 1, height: 1))
     var zombie = SKSpriteNode()
+    var zombies : [SKSpriteNode] = []
     var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
     var lastTouch : CGPoint?
@@ -37,6 +38,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.contactDelegate = self
         lastTouch = player.position
         updateCamera()
+    }
+    
+    func createZombie() -> SKSpriteNode {
+        let newZombie = SKSpriteNode(color: UIColor.green, size: CGSize(width: 40, height: 40))
+        newZombie.physicsBody = SKPhysicsBody(rectangleOf: newZombie.frame.size)
+        swordAnchor.physicsBody!.affectedByGravity = false
+        newZombie.physicsBody?.categoryBitMask = 4
+        newZombie.physicsBody?.contactTestBitMask = 3
+        return newZombie
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
