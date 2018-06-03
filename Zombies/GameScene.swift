@@ -14,7 +14,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var player = SKSpriteNode()
     var sword = SKSpriteNode()
     var swordAnchor = SKSpriteNode(color: UIColor.white, size: CGSize(width: 1, height: 1))
-    var zombie = SKSpriteNode()
     var zombies : [SKSpriteNode] = []
     var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
@@ -22,7 +21,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
-        zombie = self.childNode(withName: "zombie") as! SKSpriteNode
         button = self.childNode(withName: "button") as! SKSpriteNode
         sword = self.childNode(withName: "sword") as! SKSpriteNode
         swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
@@ -37,15 +35,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.add(joint)
         self.physicsWorld.contactDelegate = self
         lastTouch = player.position
+        zombies.append(createZombie())
+        for z in zombies {
+            self.addChild(z)
+        }
         updateCamera()
     }
     
     func createZombie() -> SKSpriteNode {
         let newZombie = SKSpriteNode(color: UIColor.green, size: CGSize(width: 40, height: 40))
         newZombie.physicsBody = SKPhysicsBody(rectangleOf: newZombie.frame.size)
-        swordAnchor.physicsBody!.affectedByGravity = false
+        newZombie.physicsBody!.affectedByGravity = false
         newZombie.physicsBody?.categoryBitMask = 4
         newZombie.physicsBody?.contactTestBitMask = 3
+        newZombie.physicsBody?.collisionBitMask = 0
+        
+        // Generate random position far from player
+        var new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
+        var new_y = player.position.y + CGFloat(arc4random_uniform(1000)) - 500
+        while abs(new_x - player.position.x) < 200 {
+            new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
+        }
+        while abs(new_x - player.position.x) < 200 {
+            new_y = player.position.y + CGFloat(arc4random_uniform(1000)) - 500
+        }
+        
+        newZombie.position = CGPoint(x: new_x, y: new_y)
         return newZombie
     }
     
@@ -83,11 +98,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         button.position = CGPoint(x: player.position.x - 137, y: player.position.y - 283)
     }
     
-    func updatePosition(for sprite: SKSpriteNode,
+    func updatePlayerPosition(for sprite: SKSpriteNode,
                         to target: CGPoint) {
         let currentPosition = player.position
-        let angle = CGFloat.pi + atan2(currentPosition.y - (lastTouch?.y)!,
-                                       currentPosition.x - (lastTouch?.x)!)
+        let angle = CGFloat.pi + atan2(currentPosition.y - target.y,
+                                       currentPosition.x - target.x)
         let rotateAction = SKAction.rotate(toAngle: angle + (CGFloat.pi*0.5),
                                            duration: 0)
         
@@ -102,6 +117,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         swordAnchor.position = player.position
         if !sword.hasActions() {
             sword.position = CGPoint(x: player.position.x + 40, y: player.position.y)
+        }
+    }
+    
+    func updateZombiePosition(for sprites: [SKSpriteNode], to target: CGPoint) {
+        for zombie in zombies {
+            let currentPosition = zombie.position
+            let angle = CGFloat.pi + atan2(currentPosition.y - target.y,
+                                           currentPosition.x - target.x)
+            let rotateAction = SKAction.rotate(toAngle: angle + (CGFloat.pi*0.5),
+                                               duration: 0)
+            
+            zombie.run(rotateAction)
+            
+            let velocityX = playerSpeed * cos(angle)
+            let velocityY = playerSpeed * sin(angle)
+            
+            let newVelocity = CGVector(dx: velocityX, dy: velocityY)
+            zombie.physicsBody?.velocity = newVelocity
         }
     }
     
@@ -122,7 +155,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if firstBody.categoryBitMask == 2 && secondBody.categoryBitMask == 4 {
             print("killed a zombie!")
-            zombie.color = UIColor.cyan
+            // KILL ZOMBIE HERE
         }
         
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
@@ -140,7 +173,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didSimulatePhysics() {
         if shouldMove(lastTouch!, player.position) {
-            updatePosition(for: player, to: lastTouch!)
+            updatePlayerPosition(for: player, to: lastTouch!)
+            updateZombiePosition(for: zombies, to: player.position)
             updateCamera()
         } else {
             player.physicsBody?.isResting = true
