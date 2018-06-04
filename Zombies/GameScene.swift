@@ -17,6 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var zombies : [SKSpriteNode] = []
     var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
+    var zombieSpeed : CGFloat = 100
     var lastTouch : CGPoint?
     
     override func sceneDidLoad() {
@@ -130,8 +131,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             zombie.run(rotateAction)
             
-            let velocityX = playerSpeed * cos(angle)
-            let velocityY = playerSpeed * sin(angle)
+            let velocityX = zombieSpeed * cos(angle)
+            let velocityY = zombieSpeed * sin(angle)
             
             let newVelocity = CGVector(dx: velocityX, dy: velocityY)
             zombie.physicsBody?.velocity = newVelocity
@@ -154,8 +155,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if firstBody.categoryBitMask == 2 && secondBody.categoryBitMask == 4 {
-            print("killed a zombie!")
-            // KILL ZOMBIE HERE
+            // REMOVE ZOMBIE
+            self.removeChildren(in: [secondBody.node!])
+            
+            // ADD NEW ONE
+            let newZombie = createZombie()
+            zombies.append(newZombie)
+            self.addChild(newZombie)
         }
         
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
