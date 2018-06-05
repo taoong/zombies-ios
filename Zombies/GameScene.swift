@@ -162,6 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let newZombie = createZombie()
             zombies.append(newZombie)
             self.addChild(newZombie)
+            updateZombiePosition(for: zombies, to: player.position)
         }
         
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
