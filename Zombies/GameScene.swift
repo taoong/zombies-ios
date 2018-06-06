@@ -19,11 +19,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerSpeed : CGFloat = 150
     var zombieSpeed : CGFloat = 100
     var lastTouch : CGPoint?
+    var score : Int = 0
+    var scoreLabel = SKLabelNode()
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
         button = self.childNode(withName: "button") as! SKSpriteNode
         sword = self.childNode(withName: "sword") as! SKSpriteNode
+        scoreLabel = self.childNode(withName: "score") as! SKLabelNode
         swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
         swordAnchor.physicsBody!.affectedByGravity = false
         swordAnchor.physicsBody!.mass = 9999999999
@@ -36,7 +39,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.add(joint)
         self.physicsWorld.contactDelegate = self
         lastTouch = player.position
-        zombies.append(createZombie())
+        for _ in 1...5 {
+            zombies.append(createZombie())
+        }
         for z in zombies {
             self.addChild(z)
         }
@@ -97,6 +102,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func updateCamera() {
         camera?.position = player.position
         button.position = CGPoint(x: player.position.x - 137, y: player.position.y - 283)
+        scoreLabel.position = CGPoint(x: 0, y: 400)
     }
     
     func updatePlayerPosition(for sprite: SKSpriteNode,
@@ -139,6 +145,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func updateScore() {
+        score += 1
+        scoreLabel.text = String(score)
+    }
+    
     func didBegin(_ contact: SKPhysicsContact) {
         // 1. Create local variables for two physics bodies
         var firstBody: SKPhysicsBody
@@ -157,6 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if firstBody.categoryBitMask == 2 && secondBody.categoryBitMask == 4 {
             // REMOVE ZOMBIE
             self.removeChildren(in: [secondBody.node!])
+            updateScore()
             
             // ADD NEW ONE
             let newZombie = createZombie()
