@@ -102,7 +102,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func updateCamera() {
         camera?.position = player.position
         button.position = CGPoint(x: player.position.x - 137, y: player.position.y - 283)
-        scoreLabel.position = CGPoint(x: 0, y: 400)
+        scoreLabel.position = CGPoint(x: player.position.x, y: player.position.y + 80)
     }
     
     func updatePlayerPosition(for sprite: SKSpriteNode,
