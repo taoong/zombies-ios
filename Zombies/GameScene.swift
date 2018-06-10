@@ -151,12 +151,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        // 1. Create local variables for two physics bodies
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
         
-        // 2. Assign the two physics bodies so that the one with the
-        // lower category is always stored in firstBody
         if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
             firstBody = contact.bodyA
             secondBody = contact.bodyB
