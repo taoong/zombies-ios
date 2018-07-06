@@ -169,8 +169,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
-            print("zombie killed you!")
-            player.color = UIColor.clear
             let menuScene = MenuScene(fileNamed: "MenuScene")
             menuScene?.scaleMode = .aspectFill
             self.view?.presentScene(menuScene)
