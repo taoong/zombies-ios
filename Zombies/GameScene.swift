@@ -17,6 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var zombies : [SKSpriteNode] = []
     var playerSpeed : CGFloat = 150
     var zombieSpeed : CGFloat = 100
+    var zombieLimit : Int = 3
     var lastTouch : CGPoint?
     var score : Int = 0
     var scoreLabel = SKLabelNode()
@@ -37,7 +38,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.add(joint)
         self.physicsWorld.contactDelegate = self
         lastTouch = player.position
-        for _ in 1...5 {
+        for _ in 1...zombieLimit {
             zombies.append(createZombie())
         }
         for z in zombies {
@@ -128,12 +129,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                            currentPosition.x - target.x)
             let rotateAction = SKAction.rotate(toAngle: angle + (CGFloat.pi*0.5),
                                                duration: 0)
-            
             zombie.run(rotateAction)
-            
             let velocityX = zombieSpeed * cos(angle)
             let velocityY = zombieSpeed * sin(angle)
-            
             let newVelocity = CGVector(dx: velocityX, dy: velocityY)
             zombie.physicsBody?.velocity = newVelocity
         }
@@ -142,6 +140,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func updateScore() {
         score += 1
         scoreLabel.text = String(score)
+        if score % 5 == 0 {
+            zombieLimit += 1
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -160,11 +161,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // REMOVE ZOMBIE
             self.removeChildren(in: [secondBody.node!])
             updateScore()
+            let index = zombies.index(of: secondBody.node as! SKSpriteNode)
+            zombies.remove(at: index!)
             
             // ADD NEW ONE
-            let newZombie = createZombie()
-            zombies.append(newZombie)
-            self.addChild(newZombie)
+            while zombies.count < zombieLimit {
+                let newZombie = createZombie()
+                zombies.append(newZombie)
+                self.addChild(newZombie)
+            }
             updateZombiePosition(for: zombies, to: player.position)
         }
         
