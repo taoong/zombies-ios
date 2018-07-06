@@ -142,6 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.text = String(score)
         if score % 5 == 0 {
             zombieLimit += 1
+            zombieSpeed += 5
         }
     }
     
