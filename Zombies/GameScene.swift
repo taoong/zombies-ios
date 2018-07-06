@@ -71,23 +71,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if button.contains((touches.first?.location(in: self))!) {
-            sword.run(SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 0.5))
-        } else {
-            handleTouch(touches)
-        }
+        swingSword()
+        handleTouch(touches)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !button.contains((touches.first?.location(in: self))!) {
-            handleTouch(touches)
-        }
+        handleTouch(touches)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !button.contains((touches.first?.location(in: self))!) {
-            handleTouch(touches)
-        }
+        handleTouch(touches)
+    }
+    
+    func swingSword() {
+        sword.run(SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 0.5))
     }
     
     func handleTouch(_ touches: Set<UITouch>) {
