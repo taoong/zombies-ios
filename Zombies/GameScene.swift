@@ -15,7 +15,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var sword = SKSpriteNode()
     var swordAnchor = SKSpriteNode(color: UIColor.white, size: CGSize(width: 1, height: 1))
     var zombies : [SKSpriteNode] = []
-    var button = SKSpriteNode()
     var playerSpeed : CGFloat = 150
     var zombieSpeed : CGFloat = 100
     var lastTouch : CGPoint?
@@ -24,7 +23,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
-        button = self.childNode(withName: "button") as! SKSpriteNode
         sword = self.childNode(withName: "sword") as! SKSpriteNode
         scoreLabel = self.childNode(withName: "score") as! SKLabelNode
         swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
@@ -98,7 +96,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func updateCamera() {
         camera?.position = player.position
-        button.position = CGPoint(x: player.position.x - 137, y: player.position.y - 283)
         scoreLabel.position = CGPoint(x: player.position.x, y: player.position.y + 80)
     }
     
