@@ -180,10 +180,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    override func update(_ currentTime: TimeInterval) {
-        swordAnchor.position = player.position
-    }
-    
     override func didSimulatePhysics() {
         if shouldMove(lastTouch!, player.position) {
             updatePlayerPosition(for: player, to: lastTouch!)
