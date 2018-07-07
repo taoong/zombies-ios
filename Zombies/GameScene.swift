@@ -31,9 +31,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sword = self.childNode(withName: "sword") as! SKSpriteNode
         scoreLabel = self.childNode(withName: "score") as! SKLabelNode
         topWall = self.childNode(withName: "topwall") as! SKSpriteNode
-        bottomWall = self.childNode(withName: "topwall") as! SKSpriteNode
-        leftWall = self.childNode(withName: "topwall") as! SKSpriteNode
-        rightWall = self.childNode(withName: "topwall") as! SKSpriteNode
+        bottomWall = self.childNode(withName: "bottomwall") as! SKSpriteNode
+        leftWall = self.childNode(withName: "leftwall") as! SKSpriteNode
+        rightWall = self.childNode(withName: "rightwall") as! SKSpriteNode
         swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
         swordAnchor.physicsBody!.affectedByGravity = false
         swordAnchor.physicsBody!.mass = 9999999999
@@ -68,7 +68,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
         var new_y = player.position.y + CGFloat(arc4random_uniform(1000)) - 500
         var newLocation = CGPoint(x: new_x, y: new_y)
-        while insideBorders(location: newLocation) || nearPlayer(location: newLocation) {
+        while !insideBorders(location: newLocation) || nearPlayer(location: newLocation) {
             new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
             new_y = player.position.y + CGFloat(arc4random_uniform(1000)) - 500
             newLocation = CGPoint(x: new_x, y: new_y)
@@ -95,7 +95,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func insideBorders(location: CGPoint) -> Bool {
-        return location.x > leftWall.position.x + 50 && location.x < rightWall.position.x - 50 && location.y < topWall.position.y - 50 && location.y > bottomWall.position.y + 50
+        return location.x > leftWall.position.x + 27.5 && location.x < rightWall.position.x - 27.5 && location.y < topWall.position.y - 27.5 && location.y > bottomWall.position.y + 27.5
     }
     
     func nearPlayer(location: CGPoint) -> Bool {
@@ -108,7 +108,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func shouldMove(_ touchPosition: CGPoint, _ currentPosition: CGPoint) -> Bool {
         return (abs(currentPosition.x - touchPosition.x) > player.frame.width / 2 ||
-            abs(currentPosition.y - touchPosition.y) > player.frame.height / 2)
+            abs(currentPosition.y - touchPosition.y) > player.frame.height / 2) && insideBorders(location: touchPosition)
     }
     
     func updateCamera() {
