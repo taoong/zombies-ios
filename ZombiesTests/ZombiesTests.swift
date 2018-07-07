@@ -36,6 +36,8 @@ class ZombiesTests: XCTestCase {
     func testInsideBorders() {
         let game = GameScene()
         XCTAssertTrue(game.insideBorders(location: CGPoint(x: 0, y: 0)))
+        XCTAssertTrue(game.insideBorders(location: CGPoint(x: 960, y: 1280)))
+        XCTAssertTrue(game.insideBorders(location: CGPoint(x: -960, y: -640)))
     }
     
 }
