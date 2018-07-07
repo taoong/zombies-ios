@@ -159,19 +159,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if firstBody.categoryBitMask == 2 && secondBody.categoryBitMask == 4 {
-            // REMOVE ZOMBIE
-            self.removeChildren(in: [secondBody.node!])
-            updateScore()
-            let index = zombies.index(of: secondBody.node as! SKSpriteNode)
-            zombies.remove(at: index!)
-            
-            // ADD NEW ONE
-            while zombies.count < zombieLimit {
-                let newZombie = createZombie()
-                zombies.append(newZombie)
-                self.addChild(newZombie)
+            if secondBody.node?.alpha == 0.4 {
+                self.removeChildren(in: [secondBody.node!])
+                updateScore()
+                let index = zombies.index(of: secondBody.node as! SKSpriteNode)
+                zombies.remove(at: index!)
+                
+                while zombies.count < zombieLimit {
+                    let newZombie = createZombie()
+                    zombies.append(newZombie)
+                    self.addChild(newZombie)
+                }
+                updateZombiePosition(for: zombies, to: player.position)
+            } else {
+                secondBody.node?.alpha -= 0.3
             }
-            updateZombiePosition(for: zombies, to: player.position)
+            
         }
         
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
