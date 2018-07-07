@@ -21,11 +21,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var lastTouch : CGPoint?
     var score : Int = 0
     var scoreLabel = SKLabelNode()
+    var topWall = SKSpriteNode()
+    var bottomWall = SKSpriteNode()
+    var leftWall = SKSpriteNode()
+    var rightWall = SKSpriteNode()
     
     override func sceneDidLoad() {
         player = self.childNode(withName: "player") as! SKSpriteNode
         sword = self.childNode(withName: "sword") as! SKSpriteNode
         scoreLabel = self.childNode(withName: "score") as! SKLabelNode
+        topWall = self.childNode(withName: "topwall") as! SKSpriteNode
+        bottomWall = self.childNode(withName: "topwall") as! SKSpriteNode
+        leftWall = self.childNode(withName: "topwall") as! SKSpriteNode
+        rightWall = self.childNode(withName: "topwall") as! SKSpriteNode
         swordAnchor.physicsBody = SKPhysicsBody(rectangleOf: swordAnchor.frame.size)
         swordAnchor.physicsBody!.affectedByGravity = false
         swordAnchor.physicsBody!.mass = 9999999999
@@ -55,17 +63,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         newZombie.physicsBody?.contactTestBitMask = 3
         newZombie.physicsBody?.collisionBitMask = 0
         
-        // Generate random position far from player
+        // Generate random position far from player and inside borders
         var new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
         var new_y = player.position.y + CGFloat(arc4random_uniform(1000)) - 500
-        while abs(new_x - player.position.x) < 200 {
+        var newLocation = CGPoint(x: new_x, y: new_y)
+        while insideBorders(location: newLocation) || nearPlayer(location: newLocation) {
             new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
-        }
-        while abs(new_x - player.position.x) < 200 {
             new_y = player.position.y + CGFloat(arc4random_uniform(1000)) - 500
+            newLocation = CGPoint(x: new_x, y: new_y)
         }
-        
-        newZombie.position = CGPoint(x: new_x, y: new_y)
+        newZombie.position = newLocation
         return newZombie
     }
     
@@ -84,6 +91,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func swingSword() {
         sword.run(SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 0.5))
+    }
+    
+    func insideBorders(location: CGPoint) -> Bool {
+        return false
+        //return location.x < leftWall.position.x + 50 || location.x > rightWall.position.x - 50 || location.y > topWall.position.y - 50 || location.y < bottomWall.position.y + 50
+    }
+    
+    func nearPlayer(location: CGPoint) -> Bool {
+        return abs(location.x - player.position.x) < 200 || abs(location.y - player.position.y) < 200
     }
     
     func handleTouch(_ touches: Set<UITouch>) {
