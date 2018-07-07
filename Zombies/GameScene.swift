@@ -62,6 +62,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         newZombie.physicsBody?.categoryBitMask = 4
         newZombie.physicsBody?.contactTestBitMask = 3
         newZombie.physicsBody?.collisionBitMask = 0
+        newZombie.alpha = 0.4
         
         // Generate random position far from player and inside borders
         var new_x = player.position.x + CGFloat(arc4random_uniform(1000)) - 500
@@ -94,8 +95,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func insideBorders(location: CGPoint) -> Bool {
-        return false
-        //return location.x < leftWall.position.x + 50 || location.x > rightWall.position.x - 50 || location.y > topWall.position.y - 50 || location.y < bottomWall.position.y + 50
+        return location.x > leftWall.position.x + 50 && location.x < rightWall.position.x - 50 && location.y < topWall.position.y - 50 && location.y > bottomWall.position.y + 50
     }
     
     func nearPlayer(location: CGPoint) -> Bool {
@@ -107,8 +107,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func shouldMove(_ touchPosition: CGPoint, _ currentPosition: CGPoint) -> Bool {
-        return abs(currentPosition.x - touchPosition.x) > player.frame.width / 2 ||
-            abs(currentPosition.y - touchPosition.y) > player.frame.height / 2
+        return (abs(currentPosition.x - touchPosition.x) > player.frame.width / 2 ||
+            abs(currentPosition.y - touchPosition.y) > player.frame.height / 2)
     }
     
     func updateCamera() {
@@ -175,7 +175,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if firstBody.categoryBitMask == 2 && secondBody.categoryBitMask == 4 {
-            if secondBody.node?.alpha == 0.4 {
+            if (secondBody.node?.alpha)! < CGFloat(0.5) {
                 self.removeChildren(in: [secondBody.node!])
                 updateScore()
                 let index = zombies.index(of: secondBody.node as! SKSpriteNode)
