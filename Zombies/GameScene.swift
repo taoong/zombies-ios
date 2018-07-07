@@ -177,6 +177,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if firstBody.categoryBitMask == 1 && secondBody.categoryBitMask == 4 {
             let menuScene = MenuScene(fileNamed: "MenuScene")
             menuScene?.scaleMode = .aspectFill
+            menuScene?.score = score
             self.view?.presentScene(menuScene)
         }
     }
